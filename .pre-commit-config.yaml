@@ -1,0 +1,49 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-merge-conflict
+      - id: check-yaml
+        args: ['--unsafe']
+      - id: check-json
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+        exclude: 'README.md'
+      - id: no-commit-to-branch
+      - id: pretty-format-json
+        args: ['--autofix']
+      - id: check-added-large-files
+      - id: detect-private-key
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.11.4
+    hooks:
+      - id: isort
+        name: Sort python imports (shows diff)
+        args: ["-c", "--diff"]
+      - id: isort
+        name: Sort python imports (fixes files)
+
+  - repo: https://github.com/psf/black
+    rev: 22.12.0
+    hooks:
+      - id: black
+        #args: ["--experimental-string-processing"]
+        args: ["--preview"]
+        language_version: python3.9
+
+  - repo: https://github.com/asottile/setup-cfg-fmt
+    rev: v2.2.0
+    hooks:
+      - id: setup-cfg-fmt
+
+  - repo: https://github.com/asottile/add-trailing-comma
+    rev: v2.4.0
+    hooks:
+      - id: add-trailing-comma
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 6.0.0
+    hooks:
+      - id: flake8
+        name: Check project styling
