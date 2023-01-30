@@ -87,7 +87,7 @@ class VelociraptorartifactHandler(object):
 
         return InterfaceStatus.I2Success(data=rendered)
 
-    def handle_asset(self, case, asset, velo_config):
+    def handle_asset(self, case, asset):
         """
         Handles an Asset and runs the configured Velociraptorartifact queries
 
@@ -243,7 +243,7 @@ class VelociraptorartifactHandler(object):
                         self.add_to_datastore(case, artifact_results)
                         print(f'Done')
 
-                        velo_config_enc = velo_config.encode()
+                        velo_config_enc = creds
         
                         self.log.debug(f'[Handle_New_Case][Add_Config_To_Datastore] was entered')
                         print(f'Made it to add to datastore function')
