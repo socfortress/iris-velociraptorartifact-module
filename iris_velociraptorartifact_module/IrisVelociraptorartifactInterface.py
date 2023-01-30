@@ -103,11 +103,11 @@ class IrisVelociraptorartifactInterface(IrisModuleInterface):
         for asset in data:
             # Check that the IOC we receive is of type the module can handle and dispatch
             if 'Linux -' in asset.asset_type.asset_name:
-                status = velociraptorartifact_handler.handle_asset(asset=asset)
+                status = velociraptorartifact_handler.handle_asset(asset=asset, case=asset)
                 in_status = InterfaceStatus.merge_status(in_status, status)
 
             if 'Windows -' in asset.asset_type.asset_name:
-                status = velociraptorartifact_handler.handle_asset(asset=asset)
+                status = velociraptorartifact_handler.handle_asset(asset=asset, case=asset)
                 in_status = InterfaceStatus.merge_status(in_status, status)
 
             #elif element.ioc_type.type_name in ['md5', 'sha224', 'sha256', 'sha512']:
