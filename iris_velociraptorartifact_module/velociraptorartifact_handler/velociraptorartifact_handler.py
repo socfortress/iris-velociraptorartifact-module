@@ -87,7 +87,7 @@ class VelociraptorartifactHandler(object):
 
         return InterfaceStatus.I2Success(data=rendered)
 
-    def handle_asset(self, case, asset):
+    def handle_asset(self, asset):
         """
         Handles an Asset and runs the configured Velociraptorartifact queries
 
@@ -241,41 +241,7 @@ class VelociraptorartifactHandler(object):
                     self.log.info({"message": source_results})
                     print(f'Adding {artifact} to datastore')
                     # self.add_to_datastore(case, artifact_results)
-                    print(f'Done')
-
-                    velo_config_enc = creds
-    
-                    self.log.debug(f'[Handle_New_Case][Add_Config_To_Datastore] was entered')
-                    print(f'Made it to add to datastore function')
-                    file_hash = stream_sha256sum(velo_config_enc)
-                    self.log.debug(f'[Handle_New_Case] [Add_Config_To_Datastore] Created SHA265 hash of configuration content: {file_hash}')
-                    
-                    dsp = datastore_get_root(case.__dict__.get("case_id"))
-                        
-                    dsf = DataStoreFile()
-                    dsf.file_original_name = f"Velociraptor Artifcat Results"
-                    dsf.file_description = (f"Velociraptor client config for {asset.asset_name}.")
-                    dsf.file_tags = "Velociraptor"
-                    dsf.file_password = ""
-                    dsf.file_is_ioc = False
-                    dsf.file_is_evidence = False
-                    dsf.file_case_id = case.__dict__.get("case_id")
-                    dsf.file_date_added = datetime.datetime.now()
-                    dsf.added_by_user_id = case.user_id
-                    dsf.file_local_name = 'tmp_config'
-                    dsf.file_parent_id = dsp.path_id
-                    dsf.file_sha256 = file_hash
-
-                    db.session.add(dsf)
-                    db.session.commit()
-
-                    dsf.file_local_name = datastore_get_standard_path(dsf, case.__dict__.get("case_id")).as_posix()
-                    db.session.commit()
-                    
-                    with open(dsf.file_local_name, 'wb') as fout:
-                        fout.write(velo_config_enc)
-
-                    setattr(self, 'file_local_path', str(dsf.file_local_name))
+                    print(f'Case ID: {asset.case_id}')
 
                     return InterfaceStatus.I2Success()
 
