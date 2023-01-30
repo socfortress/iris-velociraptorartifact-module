@@ -239,6 +239,9 @@ class VelociraptorartifactHandler(object):
                             except Exception:
                                 pass
                         self.log.info({"message": source_results})
+                        print(f'Adding {artifact} to datastore')
+                        self.add_to_datastore(case, artifact_results)
+                        print(f'Done')
 
                     return InterfaceStatus.I2Success()
 
