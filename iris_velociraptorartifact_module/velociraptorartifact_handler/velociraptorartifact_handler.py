@@ -9,11 +9,26 @@
 #  License MIT
 
 
-import traceback
-from jinja2 import Template
-
 import iris_interface.IrisInterfaceStatus as InterfaceStatus
-from app.datamgmt.manage.manage_attribute_db import add_tab_attribute_field
+# Imports for datastore handling
+import app
+from app import db
+from app.datamgmt.datastore.datastore_db import datastore_get_root
+from app.datamgmt.datastore.datastore_db import datastore_get_standard_path
+from app.models import DataStoreFile
+from app.util import stream_sha256sum
+#import marshmallow
+import datetime
+
+#import argparse
+import json
+import grpc
+import time
+#import yaml
+
+import pyvelociraptor
+from pyvelociraptor import api_pb2
+from pyvelociraptor import api_pb2_grpc
 
 
 class VelociraptorartifactHandler(object):
@@ -22,6 +37,9 @@ class VelociraptorartifactHandler(object):
         self.server_config = server_config
         self.velociraptorartifact = self.get_velociraptorartifact_instance()
         self.log = logger
+        self.config = pyvelociraptor.LoadConfigFile(
+            self.mod_config.get("velo_api_config"),
+        )
 
     def get_velociraptorartifact_instance(self):
         """
@@ -69,39 +87,201 @@ class VelociraptorartifactHandler(object):
 
         return InterfaceStatus.I2Success(data=rendered)
 
-    def handle_domain(self, ioc):
+    def handle_asset(self, case, asset):
         """
-        Handles an IOC of type domain and adds VT insights
+        Handles an Asset and runs the configured Velociraptorartifact queries
 
-        :param ioc: IOC instance
+        :param ioc: Asset
         :return: IIStatus
         """
+        artifact = self.mod_config.get("velo_artifact")
+        self.log.info(f'Running artifact {artifact} on asset {asset.asset_name}')
 
-        self.log.info(f'Getting domain report for {ioc.ioc_value}')
+        creds = grpc.ssl_channel_credentials(
+            root_certificates=self.config["ca_certificate"].encode("utf8"),
+            private_key=self.config["client_private_key"].encode("utf8"),
+            certificate_chain=self.config["client_cert"].encode("utf8"),
+        )
 
-        # TODO! do your stuff, then report it to the element (here an IOC)
+        options = (("grpc.ssl_target_name_override", "VelociraptorServer"),)
 
-        if self.mod_config.get('velociraptorartifact_report_as_attribute') is True:
-            self.log.info('Adding new attribute velociraptorartifact Domain Report to IOC')
+        with grpc.secure_channel(
+            self.config["api_connection_string"],
+            creds,
+            options,
+        ) as channel:
+            stub = api_pb2_grpc.APIStub(channel)
 
-            report = ["<TODO> report from velociraptorartifact"]
+            client_query = (
+                "select client_id from clients(search='host:" + asset.asset_name + "')"
+            )
+            print(asset.asset_name)
 
-            status = self.gen_domain_report_from_template(self.mod_config.get('velociraptorartifact_domain_report_template'), report)
+            # Send initial request
+            print("Sending client request - soc.")
+            client_request = api_pb2.VQLCollectorArgs(
+                max_wait=1,
+                Query=[
+                    api_pb2.VQLRequest(
+                        Name="ClientQuery",
+                        VQL=client_query,
+                    ),
+                ],
+            )
 
-            if not status.is_success():
-                return status
+            for client_response in stub.Query(client_request):
+                try:
+                    client_results = json.loads(client_response.Response)
+                    global client_id
+                    client_id = client_results[0]["client_id"]
+                    print(client_id)
+                except Exception:
+                    self.log.info({"message": "Could not find a suitable client."})
+                    pass
 
-            rendered_report = status.get_data()
+            # Define initial query
+            init_query = (
+                "SELECT collect_client(client_id='"
+                + client_id
+                + "', artifacts=['"
+                + artifact
+                + "']) FROM scope()"
+            )
+            print(init_query)
 
-            try:
-                add_tab_attribute_field(ioc, tab_name='velociraptorartifact Report', field_name="HTML report", field_type="html",
-                                        field_value=rendered_report)
+            # Send initial request
+            print("Sending initial request - soc")
+            request = api_pb2.VQLCollectorArgs(
+                max_wait=1,
+                Query=[
+                    api_pb2.VQLRequest(
+                        Name="Query",
+                        VQL=init_query,
+                    ),
+                ],
+            )
 
-            except Exception:
+            for response in stub.Query(request):
+                try:
+                    init_results = json.loads(response.Response)
+                    flow = list(init_results[0].values())[0]
+                    print("made it to loop")
+                    flow_id = str(flow["flow_id"])
+                    print(init_results)
+                    # Define second query
+                    flow_query = (
+                        "SELECT * from flows(client_id='"
+                        + str(flow["request"]["client_id"])
+                        + "', flow_id='"
+                        + flow_id
+                        + "')"
+                    )
+                    print(flow_query)
+                    state = "RUNNING"
 
-                self.log.error(traceback.format_exc())
-                return InterfaceStatus.I2Error(traceback.format_exc())
-        else:
-            self.log.info('Skipped adding attribute report. Option disabled')
+                    # Check to see if the flow has completed
+                    while state != "FINISHED":
+                        followup_request = api_pb2.VQLCollectorArgs(
+                            max_wait=10,
+                            Query=[
+                                api_pb2.VQLRequest(
+                                    Name="QueryForFlow",
+                                    VQL=flow_query,
+                                ),
+                            ],
+                        )
 
-        return InterfaceStatus.I2Success()
+                        for followup_response in stub.Query(followup_request):
+                            try:
+                                flow_results = json.loads(followup_response.Response)
+                            except Exception:
+                                pass
+                        state = flow_results[0]["state"]
+                        print(state)
+                        global artifact_results
+                        artifact_results = flow_results[0]["artifacts_with_results"]
+                        self.log.info({"message": state})
+                        time.sleep(1.0)
+                        if state == "FINISHED":
+                            asset.asset_tags = f"{asset.asset_tags},{artifact}:collected"
+                            time.sleep(5)
+                            print(state)
+                            break
+
+                    # Grab the source from the artifact
+                    source_results = []
+                    for artifact in artifact_results:
+                        source_query = (
+                            "SELECT * from source(client_id='"
+                            + str(flow["request"]["client_id"])
+                            + "', flow_id='"
+                            + flow_id
+                            + "', artifact='"
+                            + artifact
+                            + "')"
+                        )
+                        source_request = api_pb2.VQLCollectorArgs(
+                            max_wait=10,
+                            Query=[
+                                api_pb2.VQLRequest(
+                                    Name="SourceQuery",
+                                    VQL=source_query,
+                                ),
+                            ],
+                        )
+                        for source_response in stub.Query(source_request):
+                            try:
+                                source_result = json.loads(source_response.Response)
+                                source_results += source_result
+                                #Add results to datastore
+                                # store client config in datastore
+                                self.add_to_datastore(case, artifact_results)
+                            except Exception:
+                                pass
+                        self.log.info({"message": source_results})
+
+                    return InterfaceStatus.I2Success()
+
+                except Exception:
+                    pass
+    
+    def add_to_datastore(self, case, velo_config, asset):
+        velo_config_enc = velo_config.encode()
+        
+        self.log.debug(f'[Handle_New_Case][Add_Config_To_Datastore] was entered')
+        file_hash = stream_sha256sum(velo_config_enc)
+        self.log.debug(f'[Handle_New_Case] [Add_Config_To_Datastore] Created SHA265 hash of configuration content: {file_hash}')
+        
+        dsp = datastore_get_root(case.__dict__.get("case_id"))
+        if not dsp:
+            return response_error('Invalid path node for this case')
+        self.log.debug(f'[Handle_New_Case] [Add_Config_To_Datastore] Node_Id of root node of the case is: {dsp.path_id}')
+
+        # Get info about available attributes of the object
+        # for attr in dir(dsp):
+        #     self.log.info("[Add_Config_To_Datastore] datastore_get_root returns data: dsp.%s = %r" % (attr, getattr(dsp, attr)))
+            
+        dsf = DataStoreFile()
+        dsf.file_original_name = f"Velociraptor Artifcat Results"
+        dsf.file_description = (f"Velociraptor client config for {asset.asset_name}.")
+        dsf.file_tags = "Velociraptor"
+        dsf.file_password = ""
+        dsf.file_is_ioc = False
+        dsf.file_is_evidence = False
+        dsf.file_case_id = case.__dict__.get("case_id")
+        dsf.file_date_added = datetime.datetime.now()
+        dsf.added_by_user_id = case.user_id
+        dsf.file_local_name = 'tmp_config'
+        dsf.file_parent_id = dsp.path_id
+        dsf.file_sha256 = file_hash
+
+        db.session.add(dsf)
+        db.session.commit()
+
+        dsf.file_local_name = datastore_get_standard_path(dsf, case.__dict__.get("case_id")).as_posix()
+        db.session.commit()
+        
+        with open(dsf.file_local_name, 'wb') as fout:
+            fout.write(velo_config_enc)
+
+        setattr(self, 'file_local_path', str(dsf.file_local_name))

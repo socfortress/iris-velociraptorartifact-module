@@ -8,8 +8,11 @@
 #
 #  License MIT
 
-module_name = "IrisVelociraptorartifact"
-module_description = ""
+module_name = "Velociraptor Artifact"
+module_description = (
+    "Module to interact with Velociraptor API to run artifacts agaisnt Assets."
+    " Questions - info@socfortress.co"
+)
 interface_version = 1.1
 module_version = 1.0
 
@@ -19,58 +22,35 @@ pipeline_info = {}
 
 module_configuration = [
     {
-        "param_name": "velociraptorartifact_url",
-        "param_human_name": "velociraptorartifact URL",
-        "param_description": "",
+        "param_name": "velo_api_config",
+        "param_human_name": "velo API config file",
+        "param_description": (
+            "Specify the full path to the API config file (yaml) to be used by"
+            " pyvelociraptor. This must be accessible from the DFIR-IRIS container"
+        ),
         "default": None,
         "mandatory": True,
-        "type": "string"
+        "type": "string",
     },
     {
-        "param_name": "velociraptorartifact_key",
-        "param_human_name": "velociraptorartifact key",
-        "param_description": "velociraptorartifact API key",
+        "param_name": "velo_artifact",
+        "param_human_name": "Velociraptor artifact to run",
+        "param_description": (
+            "Specify the artifact to be collected via Velociraptor - I.E"
+            " Windows.Applications.Chrome.History"
+        ),
         "default": None,
         "mandatory": True,
-        "type": "sensitive_string"
+        "type": "string",
     },
-    
     {
         "param_name": "velociraptorartifact_manual_hook_enabled",
-        "param_human_name": "Manual triggers on IOCs",
+        "param_human_name": "Manual triggers on Assets",
         "param_description": "Set to True to offers possibility to manually triggers the module via the UI",
         "default": True,
         "mandatory": True,
         "type": "bool",
         "section": "Triggers"
-    },
-    {
-        "param_name": "velociraptorartifact_on_create_hook_enabled",
-        "param_human_name": "Triggers automatically on IOC create",
-        "param_description": "Set to True to automatically add a velociraptorartifact insight each time an IOC is created",
-        "default": False,
-        "mandatory": True,
-        "type": "bool",
-        "section": "Triggers"
-    },
-    {
-        "param_name": "velociraptorartifact_on_update_hook_enabled",
-        "param_human_name": "Triggers automatically on IOC update",
-        "param_description": "Set to True to automatically add a velociraptorartifact insight each time an IOC is updated",
-        "default": False,
-        "mandatory": True,
-        "type": "bool",
-        "section": "Triggers"
-    },
-    {
-        "param_name": "velociraptorartifact_report_as_attribute",
-        "param_human_name": "Add velociraptorartifact report as new IOC attribute",
-        "param_description": "Creates a new attribute on the IOC, base on the velociraptorartifact report. Attributes are based "
-                             "on the templates of this configuration",
-        "default": True,
-        "mandatory": True,
-        "type": "bool",
-        "section": "Insights"
     },# TODO: careful here, remove backslashes from \{\{ results| tojson(indent=4) \}\}
     {
         "param_name": "velociraptorartifact_domain_report_template",
