@@ -1,0 +1,9 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+build/
+.venv/
+wheels/
+*.egg-info/
+*.egg
