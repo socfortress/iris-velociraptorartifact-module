@@ -252,6 +252,7 @@ class VelociraptorartifactHandler(object):
         velo_config_enc = velo_config.encode()
         
         self.log.debug(f'[Handle_New_Case][Add_Config_To_Datastore] was entered')
+        print(f'Made it to add to datastore function')
         file_hash = stream_sha256sum(velo_config_enc)
         self.log.debug(f'[Handle_New_Case] [Add_Config_To_Datastore] Created SHA265 hash of configuration content: {file_hash}')
         
