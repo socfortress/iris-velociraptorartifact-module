@@ -251,13 +251,6 @@ class VelociraptorartifactHandler(object):
                     self.log.debug(f'[Handle_New_Case] [Add_Config_To_Datastore] Created SHA265 hash of configuration content: {file_hash}')
                     
                     dsp = datastore_get_root(case.__dict__.get("case_id"))
-                    if not dsp:
-                        return response_error('Invalid path node for this case')
-                    self.log.debug(f'[Handle_New_Case] [Add_Config_To_Datastore] Node_Id of root node of the case is: {dsp.path_id}')
-
-                    # Get info about available attributes of the object
-                    # for attr in dir(dsp):
-                    #     self.log.info("[Add_Config_To_Datastore] datastore_get_root returns data: dsp.%s = %r" % (attr, getattr(dsp, attr)))
                         
                     dsf = DataStoreFile()
                     dsf.file_original_name = f"Velociraptor Artifcat Results"
