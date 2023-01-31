@@ -241,6 +241,7 @@ class VelociraptorartifactHandler(object):
                         self.log.info({"message": source_results})
                         print(f'Hello')
                         print(f'Case ID: {asset.case_id}')
+                        print(f'Hello2')
                         file_hash = stream_sha256sum(source_results)
                         print(f'File Hash: test')
 
