@@ -239,6 +239,7 @@ class VelociraptorartifactHandler(object):
                             except Exception:
                                 pass
                         self.log.info({"message": source_results})
+                        print(f'Case ID: {asset.case_id}')
 
                     return InterfaceStatus.I2Success("Successfully processed report")
 
