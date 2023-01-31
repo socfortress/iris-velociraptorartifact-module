@@ -251,8 +251,8 @@ class VelociraptorartifactHandler(object):
                             print(f'File Hash: {file_hash}')
                             dsp = datastore_get_root(asset.case_id)
                             dsf = DataStoreFile()
-                            dsf.file_original_name = f"client.{case.client_id}.config.yaml"
-                            dsf.file_description = f"Velociraptor client config for {case.client.name}."
+                            dsf.file_original_name = f"{artifact}"
+                            dsf.file_description = f"Velociraptor client config for {artifact}."
                             dsf.file_tags = "Velociraptor"
                             dsf.file_password = ""
                             dsf.file_is_ioc = False
