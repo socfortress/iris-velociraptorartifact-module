@@ -243,11 +243,30 @@ class VelociraptorartifactHandler(object):
                             print(f'Hello')
                             print(f'Case ID: {asset.case_id}')
                             print(f'Hello2')
+                            #Convert json dict to string
                             string_results = json.dumps(source_results)
                             encoded_results = string_results.encode()
                             print(f'Endoded Results: {encoded_results}')
                             file_hash = stream_sha256sum(encoded_results)
                             print(f'File Hash: {file_hash}')
+                            dsp = datastore_get_root(asset.case_id)
+                            dsf = DataStoreFile()
+                            dsf.file_original_name = f"client.{case.client_id}.config.yaml"
+                            dsf.file_description = f"Velociraptor client config for {case.client.name}."
+                            dsf.file_tags = "Velociraptor"
+                            dsf.file_password = ""
+                            dsf.file_is_ioc = False
+                            dsf.file_is_evidence = False
+                            dsf.file_case_id = asset.case_id
+                            dsf.file_date_added = datetime.datetime.now()
+                            dsf.file_local_name = 'tmp_config'
+                            dsf.file_parent_id = dsp.path_id
+                            dsf.file_sha256 = file_hash
+                            db.session.add(dsf)
+                            db.session.commit()
+                            with open(dsf.file_local_name, 'wb') as fout:
+                                fout.write(encoded_results)
+                                setattr(self, 'file_local_path', str(dsf.file_local_name))
                         except Exception:
                             self.log.error(traceback.format_exc())
                             return InterfaceStatus.I2Error(traceback.format_exc())
