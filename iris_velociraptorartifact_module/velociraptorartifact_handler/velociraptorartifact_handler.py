@@ -205,7 +205,7 @@ class VelociraptorartifactHandler(object):
                         if state == "FINISHED":
                             asset.asset_tags = f"{asset.asset_tags},{artifact}:collected"
                             time.sleep(5)
-                            print(state)
+                            print(flow_results)
                             break
 
                     # Grab the source from the artifact
@@ -238,12 +238,9 @@ class VelociraptorartifactHandler(object):
                                # self.add_to_datastore(case, artifact_results)
                             except Exception:
                                 pass
-                    self.log.info({"message": source_results})
-                    print(f'Adding {artifact} to datastore')
-                    # self.add_to_datastore(case, artifact_results)
-                    print(f'Case ID: {asset.case_id}')
+                        self.log.info({"message": source_results})
 
-                    return InterfaceStatus.I2Success()
+                    return InterfaceStatus.I2Success("Successfully processed report")
 
                 except Exception:
                     pass
