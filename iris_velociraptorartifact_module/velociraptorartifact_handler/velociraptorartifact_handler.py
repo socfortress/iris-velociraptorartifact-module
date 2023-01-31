@@ -15,6 +15,7 @@ import app
 from app import db
 from app.datamgmt.datastore.datastore_db import datastore_get_root
 from app.datamgmt.datastore.datastore_db import datastore_get_standard_path
+from app.datamgmt.manage.manage_attribute_db import add_tab_attribute_field
 from app.models import DataStoreFile
 from app.util import stream_sha256sum
 #import marshmallow
@@ -270,6 +271,25 @@ class VelociraptorartifactHandler(object):
                             with open(dsf.file_local_name, 'wb') as fout:
                                 fout.write(encoded_results)
                                 setattr(self, 'file_local_path', str(dsf.file_local_name))
+
+                            self.log.info("Adding new attribute Velociraptor Report to IOC")
+
+                            status = self.gen_domain_report_from_template(
+                                html_template=self.mod_config.get(
+                                    "velociraptor_report_template",
+                                ),
+                                velociraptor_report=source_results,
+                            )
+                            rendered_report = status.get_data()
+
+                            add_tab_attribute_field(
+                                asset,
+                                tab_name=artifact,
+                                field_name="HTML report",
+                                field_type="html",
+                                field_value=rendered_report,
+                            )
+
                         except Exception:
                             self.log.error(traceback.format_exc())
                             return InterfaceStatus.I2Error(traceback.format_exc())
