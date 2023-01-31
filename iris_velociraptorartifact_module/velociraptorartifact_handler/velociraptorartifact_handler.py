@@ -259,6 +259,7 @@ class VelociraptorartifactHandler(object):
                             dsf.file_is_evidence = False
                             dsf.file_case_id = asset.case_id
                             dsf.file_date_added = datetime.datetime.now()
+                            dsf.added_by_user_id = asset.user_id
                             dsf.file_local_name = 'tmp_config'
                             dsf.file_parent_id = dsp.path_id
                             dsf.file_sha256 = file_hash
