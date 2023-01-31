@@ -69,7 +69,7 @@ module_configuration = [
                    "class=\"span-mode\"></div>\n                </div>\n                <div "
                    "id=\"drop_raw_velociraptorartifact\" class=\"collapse\" aria-labelledby=\"drop_r_velociraptorartifact\" "
                    "style=\"\">\n                    <div class=\"card-body\">\n              "
-                   "          <div id='velociraptorartifact_raw_ace'>\{\{ results| tojson(indent=4) \}\}</div>\n  "
+                   "          <div id='velociraptorartifact_raw_ace'>{{ results| tojson(indent=4) }}</div>\n  "
                    "                  </div>\n                </div>\n            </div>\n    "
                    "    </div>\n    </div>\n</div> \n<script>\nvar velociraptorartifact_in_raw = ace.edit("
                    "\"velociraptorartifact_raw_ace\",\n{\n    autoScrollEditorIntoView: true,\n    minLines: "

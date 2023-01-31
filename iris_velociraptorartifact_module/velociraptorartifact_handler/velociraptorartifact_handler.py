@@ -276,7 +276,7 @@ class VelociraptorartifactHandler(object):
 
                             status = self.gen_domain_report_from_template(
                                 html_template=self.mod_config.get(
-                                    "velociraptor_report_template",
+                                    "velociraptorartifact_domain_report_template",
                                 ),
                                 velociraptorartifact_report=source_results,
                             )
