@@ -8,7 +8,7 @@
 #
 #  License MIT
 
-
+import traceback
 import iris_interface.IrisInterfaceStatus as InterfaceStatus
 # Imports for datastore handling
 import app
@@ -243,10 +243,11 @@ class VelociraptorartifactHandler(object):
                         print(f'Case ID: {asset.case_id}')
                         print(f'Hello2')
                         file_hash = stream_sha256sum(source_results)
-                        print(f'File Hash: test')
+                        print(f'File Hash: {file_hash}')
 
 
                     return InterfaceStatus.I2Success("Successfully processed report")
 
                 except Exception:
-                    pass
+                    self.log.error(traceback.format_exc())
+                    return InterfaceStatus.I2Error(traceback.format_exc())
