@@ -241,7 +241,7 @@ class VelociraptorartifactHandler(object):
                         self.log.info({"message": source_results})
                         print(f'Case ID: {asset.case_id}')
                         file_hash = stream_sha256sum(source_results)
-                        print(f'File Hash: {file_hash}')
+                        print(f'File Hash: test')
 
 
                     return InterfaceStatus.I2Success("Successfully processed report")
