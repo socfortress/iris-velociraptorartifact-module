@@ -244,10 +244,11 @@ class VelociraptorartifactHandler(object):
                         print(f'Hello2')
                         file_hash = stream_sha256sum(source_results)
                         print(f'File Hash: {file_hash}')
+                        self.log.error(traceback.format_exc())
+                        return InterfaceStatus.I2Error(traceback.format_exc())
 
 
                     return InterfaceStatus.I2Success("Successfully processed report")
 
                 except Exception:
-                    self.log.error(traceback.format_exc())
-                    return InterfaceStatus.I2Error(traceback.format_exc())
+                    pass
