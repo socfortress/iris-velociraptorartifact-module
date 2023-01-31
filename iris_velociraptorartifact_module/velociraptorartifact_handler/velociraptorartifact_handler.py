@@ -265,6 +265,8 @@ class VelociraptorartifactHandler(object):
                             dsf.file_sha256 = file_hash
                             db.session.add(dsf)
                             db.session.commit()
+                            dsf.file_local_name = datastore_get_standard_path(dsf, asset.case_id).as_posix()
+                            db.session.commit()
                             with open(dsf.file_local_name, 'wb') as fout:
                                 fout.write(encoded_results)
                                 setattr(self, 'file_local_path', str(dsf.file_local_name))
