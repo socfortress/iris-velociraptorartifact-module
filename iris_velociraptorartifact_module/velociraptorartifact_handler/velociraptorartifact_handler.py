@@ -243,7 +243,7 @@ class VelociraptorartifactHandler(object):
                             print(f'Hello')
                             print(f'Case ID: {asset.case_id}')
                             print(f'Hello2')
-                            string_results = "".join(source_results.values())
+                            string_results = json.dumps(source_results)
                             encoded_results = string_results.encode()
                             print(f'Endoded Results: {encoded_results}')
                             file_hash = stream_sha256sum(encoded_results)
