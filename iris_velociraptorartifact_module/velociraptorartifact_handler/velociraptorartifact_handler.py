@@ -243,7 +243,8 @@ class VelociraptorartifactHandler(object):
                             print(f'Hello')
                             print(f'Case ID: {asset.case_id}')
                             print(f'Hello2')
-                            encoded_results = source_result.encode()
+                            encoded_results = [source_results.encode() for source_results in source_results]
+                            print(f'Endoded Results: {encoded_results}')
                             file_hash = stream_sha256sum(encoded_results)
                             print(f'File Hash: {file_hash}')
                         except Exception:
