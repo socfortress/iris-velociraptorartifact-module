@@ -242,15 +242,10 @@ class VelociraptorartifactHandler(object):
                                 pass
                         try:
                             self.log.info({"message": source_results})
-                            print(f'Hello')
-                            print(f'Case ID: {asset.case_id}')
-                            print(f'Hello2')
                             #Convert json dict to string
                             string_results = json.dumps(source_results)
                             encoded_results = string_results.encode()
-                            print(f'Endoded Results: {encoded_results}')
                             file_hash = stream_sha256sum(encoded_results)
-                            print(f'File Hash: {file_hash}')
                             dsp = datastore_get_root(asset.case_id)
                             dsf = DataStoreFile()
                             dsf.file_original_name = f"{artifact}"
@@ -269,11 +264,12 @@ class VelociraptorartifactHandler(object):
                             db.session.commit()
                             dsf.file_local_name = datastore_get_standard_path(dsf, asset.case_id).as_posix()
                             db.session.commit()
+                            self.log.info("Uploading file to datastore")
                             with open(dsf.file_local_name, 'wb') as fout:
                                 fout.write(encoded_results)
                                 setattr(self, 'file_local_path', str(dsf.file_local_name))
 
-                            self.log.info("Adding new attribute Velociraptor Report to IOC")
+                            self.log.info("Adding new attribute Velociraptor Report to Asset")
 
                             status = self.gen_domain_report_from_template(
                                 html_template=self.mod_config.get(
