@@ -238,15 +238,16 @@ class VelociraptorartifactHandler(object):
                                # self.add_to_datastore(case, artifact_results)
                             except Exception:
                                 pass
-                        self.log.info({"message": source_results})
-                        print(f'Hello')
-                        print(f'Case ID: {asset.case_id}')
-                        print(f'Hello2')
-                        file_hash = stream_sha256sum(source_results)
-                        print(f'File Hash: {file_hash}')
-                        self.log.error(traceback.format_exc())
-                        return InterfaceStatus.I2Error(traceback.format_exc())
-
+                        try:
+                            self.log.info({"message": source_results})
+                            print(f'Hello')
+                            print(f'Case ID: {asset.case_id}')
+                            print(f'Hello2')
+                            file_hash = stream_sha256sum(source_results)
+                            print(f'File Hash: {file_hash}')
+                        except Exception:
+                            self.log.error(traceback.format_exc())
+                            return InterfaceStatus.I2Error(traceback.format_exc())
 
                     return InterfaceStatus.I2Success("Successfully processed report")
 
