@@ -84,7 +84,7 @@ class VelociraptorartifactHandler(object):
 
         except Exception:
             print(traceback.format_exc())
-            log.error(traceback.format_exc())
+            self.log.error(traceback.format_exc())
             return InterfaceStatus.I2Error(traceback.format_exc())
 
         return InterfaceStatus.I2Success(data=rendered)
@@ -117,10 +117,9 @@ class VelociraptorartifactHandler(object):
             client_query = (
                 "select client_id from clients(search='host:" + asset.asset_name + "')"
             )
-            print(asset.asset_name)
+            self.info.log(f'Found asset name: {asset.asset_name}')
 
             # Send initial request
-            print("Sending client request - soc.")
             client_request = api_pb2.VQLCollectorArgs(
                 max_wait=1,
                 Query=[
@@ -136,7 +135,7 @@ class VelociraptorartifactHandler(object):
                     client_results = json.loads(client_response.Response)
                     global client_id
                     client_id = client_results[0]["client_id"]
-                    print(client_id)
+                    self.info.log(f'Found client id: {client_id}')
                 except Exception:
                     self.log.info({"message": "Could not find a suitable client."})
                     pass
@@ -149,10 +148,8 @@ class VelociraptorartifactHandler(object):
                 + artifact
                 + "']) FROM scope()"
             )
-            print(init_query)
 
             # Send initial request
-            print("Sending initial request - soc")
             request = api_pb2.VQLCollectorArgs(
                 max_wait=1,
                 Query=[
@@ -167,9 +164,7 @@ class VelociraptorartifactHandler(object):
                 try:
                     init_results = json.loads(response.Response)
                     flow = list(init_results[0].values())[0]
-                    print("made it to loop")
                     flow_id = str(flow["flow_id"])
-                    print(init_results)
                     # Define second query
                     flow_query = (
                         "SELECT * from flows(client_id='"
@@ -178,7 +173,6 @@ class VelociraptorartifactHandler(object):
                         + flow_id
                         + "')"
                     )
-                    print(flow_query)
                     state = "RUNNING"
 
                     # Check to see if the flow has completed
@@ -199,7 +193,6 @@ class VelociraptorartifactHandler(object):
                             except Exception:
                                 pass
                         state = flow_results[0]["state"]
-                        print(state)
                         global artifact_results
                         artifact_results = flow_results[0]["artifacts_with_results"]
                         self.log.info({"message": state})
@@ -207,7 +200,6 @@ class VelociraptorartifactHandler(object):
                         if state == "FINISHED":
                             asset.asset_tags = f"{asset.asset_tags},{artifact}:collected"
                             time.sleep(5)
-                            print(flow_results)
                             break
 
                     # Grab the source from the artifact
