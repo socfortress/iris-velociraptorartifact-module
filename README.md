@@ -233,7 +233,35 @@ To run the module select `Case -> Asset` and select the dropdown menu. </br>
   </p>
 </div>
 
-> # Device is now un quarantined
+<div align="center" width="100" height="50">
+
+  <h3 align="center">Access Data Store</h3>
+
+  <p align="center">
+    <br />
+    <a href="https://github.com/socfortress/iris-veloquarantineremove-module/blob/main/images/running.PNG">
+    <img src="images/data_store.PNG">
+    </a>
+    <br />
+    <br />
+  </p>
+</div>
+
+<div align="center" width="100" height="50">
+
+  <h3 align="center">Download From Data Store</h3>
+
+  <p align="center">
+    <br />
+    <a href="https://github.com/socfortress/iris-veloquarantineremove-module/blob/main/images/running.PNG">
+    <img src="images/data_store_download.PNG">
+    </a>
+    <br />
+    <br />
+  </p>
+</div>
+
+> # Artifact is collected
 
 
 
