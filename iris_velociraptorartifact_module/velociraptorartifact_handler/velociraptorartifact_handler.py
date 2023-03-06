@@ -117,7 +117,6 @@ class VelociraptorartifactHandler(object):
             client_query = (
                 "select client_id from clients(search='host:" + asset.asset_name + "')"
             )
-            self.info.log(f'Found asset name: {asset.asset_name}')
 
             # Send initial request
             client_request = api_pb2.VQLCollectorArgs(
