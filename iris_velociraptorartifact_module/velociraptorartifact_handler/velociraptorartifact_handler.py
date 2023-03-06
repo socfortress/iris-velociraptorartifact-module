@@ -232,7 +232,7 @@ class VelociraptorartifactHandler(object):
                             except Exception:
                                 pass
                         try:
-                            self.log.info({"message": source_results})
+                            self.log.info(f'Found {len(source_results)} results for {artifact}')
                             #Convert json dict to string
                             string_results = json.dumps(source_results)
                             encoded_results = string_results.encode()
