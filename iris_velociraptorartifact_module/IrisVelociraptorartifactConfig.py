@@ -28,7 +28,7 @@ module_configuration = [
             "Specify the full path to the API config file (yaml) to be used by"
             " pyvelociraptor. This must be accessible from the DFIR-IRIS container"
         ),
-        "default": None,
+        "default": "/iriswebapp/api.config.yaml",
         "mandatory": True,
         "type": "string",
     },
@@ -37,9 +37,9 @@ module_configuration = [
         "param_human_name": "Velociraptor artifact to run",
         "param_description": (
             "Specify the artifact to be collected via Velociraptor - I.E"
-            " Windows.Applications.Chrome.History"
+            "Windows.Applications.Chrome.History"
         ),
-        "default": None,
+        "default": "Windows.Applications.Chrome.History",
         "mandatory": True,
         "type": "string",
     },
@@ -54,35 +54,9 @@ module_configuration = [
     },# TODO: careful here, remove backslashes from \{\{ results| tojson(indent=4) \}\}
     {
         "param_name": "velociraptorartifact_domain_report_template",
-        "param_human_name": "Domain report template",
-        "param_description": "Domain report template used to add a new custom attribute to the target IOC",
-        "default": "<div class=\"row\">\n    <div class=\"col-12\">\n        <div "
-                   "class=\"accordion\">\n            <h3>velociraptorartifact raw results</h3>\n\n           "
-                   " <div class=\"card\">\n                <div class=\"card-header "
-                   "collapsed\" id=\"drop_r_velociraptorartifact\" data-toggle=\"collapse\" "
-                   "data-target=\"#drop_raw_velociraptorartifact\" aria-expanded=\"false\" "
-                   "aria-controls=\"drop_raw_velociraptorartifact\" role=\"button\">\n                    <div "
-                   "class=\"span-icon\">\n                        <div "
-                   "class=\"flaticon-file\"></div>\n                    </div>\n              "
-                   "      <div class=\"span-title\">\n                        velociraptorartifact raw "
-                   "results\n                    </div>\n                    <div "
-                   "class=\"span-mode\"></div>\n                </div>\n                <div "
-                   "id=\"drop_raw_velociraptorartifact\" class=\"collapse\" aria-labelledby=\"drop_r_velociraptorartifact\" "
-                   "style=\"\">\n                    <div class=\"card-body\">\n              "
-                   "          <div id='velociraptorartifact_raw_ace'>{{ results| tojson(indent=4) }}</div>\n  "
-                   "                  </div>\n                </div>\n            </div>\n    "
-                   "    </div>\n    </div>\n</div> \n<script>\nvar velociraptorartifact_in_raw = ace.edit("
-                   "\"velociraptorartifact_raw_ace\",\n{\n    autoScrollEditorIntoView: true,\n    minLines: "
-                   "30,\n});\nvelociraptorartifact_in_raw.setReadOnly(true);\nvelociraptorartifact_in_raw.setTheme("
-                   "\"ace/theme/tomorrow\");\nvelociraptorartifact_in_raw.session.setMode("
-                   "\"ace/mode/json\");\nvelociraptorartifact_in_raw.renderer.setShowGutter("
-                   "true);\nvelociraptorartifact_in_raw.setOption(\"showLineNumbers\", "
-                   "true);\nvelociraptorartifact_in_raw.setOption(\"showPrintMargin\", "
-                   "false);\nvelociraptorartifact_in_raw.setOption(\"displayIndentGuides\", "
-                   "true);\nvelociraptorartifact_in_raw.setOption(\"maxLines\", "
-                   "\"Infinity\");\nvelociraptorartifact_in_raw.session.setUseWrapMode("
-                   "true);\nvelociraptorartifact_in_raw.setOption(\"indentedSoftWrap\", "
-                   "true);\nvelociraptorartifact_in_raw.renderer.setScrollMargin(8, 5);\n</script> ",
+        "param_human_name": "Velociraptor Artifact report template",
+        "param_description": "Velociraptor Artifact report template used to add a new custom attribute to the target IOC",
+        "default": "<div class=\"row\">\n    <div class=\"col-12\">\n        <div class=\"accordion\">\n            <h2 class=\"text-center\"><a href=\"https://www.socfortress.co/contact_form.html\">SOCFortress Professional Services</a></h2>\n            <h3>Don't forget to check the datastore.</h3>\n            <h3>Velociraptor Artifact raw results</h3>\n\n            <div class=\"card\">\n                <div class=\"card-header collapsed\" id=\"drop_r_velociraptorartifact\" data-toggle=\"collapse\" data-target=\"#drop_raw_velociraptorartifact\" aria-expanded=\"false\" aria-controls=\"drop_raw_velociraptorartifact\" role=\"button\">\n                    <div class=\"span-icon\">\n                        <div class=\"flaticon-file\"></div>\n                    </div>\n                    <div class=\"span-title\">\n                        Velociraptor Artifact results\n                    </div>\n                    <div class=\"span-mode\"></div>\n                </div>\n                <div id=\"drop_raw_velociraptorartifact\" class=\"collapse\" aria-labelledby=\"drop_r_velociraptorartifact\" style=\"\">\n                    <div class=\"card-body\">\n                        <div id='velociraptorartifact_raw_ace'>{{ results| tojson(indent=4) }}</div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div> \n<script>\nvar velociraptorartifact_in_raw = ace.edit(\"velociraptorartifact_raw_ace\",\n{\n    autoScrollEditorIntoView: true,\n    minLines: 30,\n});\nvelociraptorartifact_in_raw.setReadOnly(true);\nvelociraptorartifact_in_raw.setTheme(\"ace/theme/tomorrow\");\nvelociraptorartifact_in_raw.session.setMode(\"ace/mode/json\");\nvelociraptorartifact_in_raw.renderer.setShowGutter(true);\nvelociraptorartifact_in_raw.setOption(\"showLineNumbers\", true);\nvelociraptorartifact_in_raw.setOption(\"showPrintMargin\", false);\nvelociraptorartifact_in_raw.setOption(\"displayIndentGuides\", true);\nvelociraptorartifact_in_raw.setOption(\"maxLines\", \"Infinity\");\nvelociraptorartifact_in_raw.session.setUseWrapMode(true);\nvelociraptorartifact_in_raw.setOption(\"indentedSoftWrap\", true);\nvelociraptorartifact_in_raw.renderer.setScrollMargin(8, 5);\n</script> ",
         "mandatory": False,
         "type": "textfield_html",
         "section": "Templates"
