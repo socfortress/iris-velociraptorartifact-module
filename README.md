@@ -150,7 +150,7 @@ Once installed, configure the module to include:
   </p>
 </div>
 
-3. Input the Module name: `iris_veloquarantineremove_module`
+3. Input the Module name: `iris_velociraptorartifact_module`
 
 <div align="center" width="100" height="50">
 
