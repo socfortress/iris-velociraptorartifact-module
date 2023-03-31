@@ -34,19 +34,19 @@ Run()
 
     echo "[BUILDnPUSH2IRIS] Found latest module file: $latest"
     echo "[BUILDnPUSH2IRIS] Copy module file to worker container.."
-    docker cp $latest iris-web-worker-1:/iriswebapp/dependencies/$module
+    docker cp $latest iriswebapp_worker:/iriswebapp/dependencies/$module
     echo "[BUILDnPUSH2IRIS] Installing module in worker container.."
-    docker exec -it iris-web-worker-1 /bin/sh -c "pip3 install dependencies/$module --force-reinstall"
+    docker exec -it iriswebapp_worker /bin/sh -c "pip3 install dependencies/$module --force-reinstall"
     echo "[BUILDnPUSH2IRIS] Restarting worker container.."
-    docker restart iris-web-worker-1
+    docker restart iriswebapp_worker
 
     if [ "$a_Flag" = true ] ; then
         echo "[BUILDnPUSH2IRIS] Copy module file to app container.."
-        docker cp $latest iris-web-app-1:/iriswebapp/dependencies/$module
+        docker cp $latest iriswebapp_app:/iriswebapp/dependencies/$module
         echo "[BUILDnPUSH2IRIS] Installing module in app container.."
-        docker exec -it iris-web-app-1 /bin/sh -c "pip3 install dependencies/$module --force-reinstall"
+        docker exec -it iriswebapp_app /bin/sh -c "pip3 install dependencies/$module --force-reinstall"
         echo "[BUILDnPUSH2IRIS] Restarting app container.."
-        docker restart iris-web-app-1
+        docker restart iriswebapp_app
     fi
 
     echo "[BUILDnPUSH2IRIS] Completed!"
